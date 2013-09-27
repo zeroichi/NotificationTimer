@@ -13,20 +13,30 @@ namespace notification_timer
     {
         List<TimerJob> jobs;
         List<TimerJob> jobs_done;
+        List<TimerJob> jobs_template;
         NotificationForm notification_form;
         Control[] control_set_absolute;
         Control[] control_set_related;
         System.Media.SoundPlayer sound_done;
+        const string settings_filename = "settings.txt";
 
         public MainForm()
         {
             InitializeComponent();
             jobs = new List<TimerJob>();
             jobs_done = new List<TimerJob>();
+            jobs_template = new List<TimerJob>();
             timer1.Enabled = true;
             control_set_related = new Control[] { label2, label4, txtTimeOut };
             control_set_absolute = new Control[] { txtHour, txtMinute, txtSecond, label5, label6, label7 };
-            sound_done = new System.Media.SoundPlayer("se_maoudamashii_chime13.wav");
+            openFileDialog1.Filter = "Wave サウンド (*.wav)|*.wav|すべてのファイル (*.*)|*.*";
+            try
+            {
+                LoadSettings();
+            }
+            // Ignore all exceptions
+            catch { }
+            ReloadSound();
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -48,8 +58,9 @@ namespace notification_timer
             {
                 if (notification_form == null || notification_form.IsDisposed)
                 {
-                    notification_form = new NotificationForm(jobs_done);
+                    notification_form = new NotificationForm(jobs, jobs_done);
                     notification_form.Show();
+                    FlashWindow.Flash(notification_form, FlashWindow.FLASHW_ALL | FlashWindow.FLASHW_TIMERNOFG);
                 }
                 else
                 {
@@ -91,7 +102,8 @@ namespace notification_timer
                     txtTimeOut.Focus();
                     return;
                 }
-                jobs.Add(new TimerJob(txtJobName.Text, DateTime.Now.AddSeconds(seconds)));
+                //jobs.Add(new TimerJob(txtJobName.Text, DateTime.Now.AddSeconds(seconds)));
+                jobs.Add(new TimerJob(txtJobName.Text, seconds, chkRepeat.Checked));
             }
             else if (radAbsolute.Checked)
             {
@@ -103,9 +115,11 @@ namespace notification_timer
                     txtHour.Focus();
                     return;
                 }
-                if (goal < DateTime.Now) goal = goal.AddDays(1.0);
-                jobs.Add(new TimerJob(txtJobName.Text, goal));
+                //if (goal < DateTime.Now) goal = goal.AddDays(1.0);
+                //jobs.Add(new TimerJob(txtJobName.Text, goal));
+                jobs.Add(new TimerJob(txtJobName.Text, goal, chkRepeat.Checked));
             }
+            UpdateJobList();
             txtJobName.Clear();
             txtJobName.Focus();
         }
@@ -120,7 +134,7 @@ namespace notification_timer
                 for (int i = 0; i < jobs.Count; ++i)
                 {
                     string remaining = TimeSpanToString(jobs[i].timeout - now);
-                    lvJobList.Items.Add(new ListViewItem(new string[] { i.ToString(), jobs[i].name, jobs[i].timeout.ToString(), remaining }));
+                    lvJobList.Items.Add(new ListViewItem(new string[] { i.ToString(), jobs[i].name, jobs[i].timeout.ToString(), remaining, jobs[i].repeat ? "する" : "しない" }));
                 }
             }
             else
@@ -195,17 +209,182 @@ namespace notification_timer
             e.Handled = true;
             return;
         }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                if (DialogResult.No == MessageBox.Show("終了してもよろしいですか？", "確認", MessageBoxButtons.YesNo))
+                    e.Cancel = true;
+            }
+        }
+
+        private void btnSelectSound_Click(object sender, EventArgs e)
+        {
+            if (DialogResult.OK == openFileDialog1.ShowDialog())
+            {
+                txtSoundFile.Text = openFileDialog1.FileName;
+                ReloadSound();
+            }
+        }
+
+        private void ReloadSound()
+        {
+            if (sound_done != null) sound_done.Dispose();
+            try
+            {
+                sound_done = new System.Media.SoundPlayer(txtSoundFile.Text);
+                sound_done.Load();
+            }
+            catch
+            {
+                chkSound.Checked = false;
+            }
+        }
+
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (sound_done != null) sound_done.Dispose();
+            if (notification_form != null) notification_form.Dispose();
+            while (true)
+            {
+                try
+                {
+                    SaveSettings();
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    if (DialogResult.Cancel == MessageBox.Show(string.Format("設定を保存できませんでした:\r\n{0}", ex.ToString()), "設定保存エラー", MessageBoxButtons.RetryCancel))
+                        break;
+                }
+            }
+        }
+
+        private void LoadSettings()
+        {
+            using (var sr = new System.IO.StreamReader(settings_filename))
+            {
+                try
+                {
+                    txtTimeOut.Text = sr.ReadLine();
+                    txtHour.Text = sr.ReadLine();
+                    txtMinute.Text = sr.ReadLine();
+                    txtSecond.Text = sr.ReadLine();
+                    radRelative.Checked = "1" == sr.ReadLine();
+                    radAbsolute.Checked = !radRelative.Checked;
+                    txtSoundFile.Text = sr.ReadLine();
+                    int c = int.Parse(sr.ReadLine());
+                    jobs.Clear();
+                    for (int i = 0; i < c; ++i)
+                        jobs.Add(TimerJob.FromString(sr.ReadLine()));
+                }
+                catch
+                {
+
+                }
+            }
+        }
+
+        private void SaveSettings()
+        {
+            using (var sw = new System.IO.StreamWriter(settings_filename))
+            {
+                sw.WriteLine(txtTimeOut.Text);
+                sw.WriteLine(txtHour.Text);
+                sw.WriteLine(txtMinute.Text);
+                sw.WriteLine(txtSecond.Text);
+                sw.WriteLine(radRelative.Checked ? "1" : "0");
+                sw.WriteLine(txtSoundFile.Text);
+                sw.WriteLine(jobs.Count);
+                foreach (var each in jobs)
+                    sw.WriteLine(each.ToString());
+            }
+        }
+
+        private void btnRemove_Click(object sender, EventArgs e)
+        {
+            if (lvJobList.SelectedItems.Count == 0) return;
+            if (DialogResult.No == MessageBox.Show("選択されたジョブを削除します．よろしいですか？", "確認", MessageBoxButtons.YesNo)) return;
+            List<TimerJob> remove_list = new List<TimerJob>();
+            foreach (ListViewItem each in lvJobList.SelectedItems)
+            {
+                remove_list.Add(jobs[int.Parse(each.Text)]);
+            }
+            jobs.RemoveAll((x) => remove_list.Contains(x));
+            UpdateJobList();
+        }
     }
 
     public class TimerJob
     {
+        enum Type
+        {
+            Null,
+            Related,
+            Absolute,
+        }
+
         public string name { get; private set; }
         public DateTime timeout { get; private set; }
+        public bool repeat { get; private set; }
+        private TimerJob.Type repeat_type;
+        private double add_seconds;
 
-        public TimerJob(string name, DateTime timeout)
+        private TimerJob() { }
+
+        public TimerJob(string name, DateTime timeout, bool again)
         {
             this.name = name;
             this.timeout = timeout;
+            DateTime now = DateTime.Now;
+            while (timeout <= now) timeout = timeout.AddDays(1.0);
+            this.repeat = again;
+            this.repeat_type = Type.Absolute;
+            this.add_seconds = 0;
+        }
+
+        public TimerJob(string name, double seconds, bool again)
+        {
+            this.name = name;
+            this.timeout = DateTime.Now.AddSeconds(seconds);
+            this.repeat = again;
+            this.repeat_type = Type.Related;
+            this.add_seconds = seconds;
+        }
+
+        public TimerJob Again()
+        {
+            if (repeat_type == Type.Related)
+            {
+                return new TimerJob(name, add_seconds, repeat);
+            }
+            else if (repeat_type == Type.Absolute)
+            {
+                return new TimerJob(name, timeout, repeat);
+            }
+            else { throw new InvalidOperationException(); }
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0}\t{1}\t{2}\t{3}\t{4}", name, timeout.Ticks, repeat, (int)repeat_type, add_seconds);
+        }
+
+        public static TimerJob FromString(string s)
+        {
+            TimerJob ret = new TimerJob();
+            string[] a = s.Split('\t');
+            ret.name = a[0];
+            ret.timeout = new DateTime(long.Parse(a[1]));
+            ret.repeat = bool.Parse(a[2]);
+            ret.repeat_type = (TimerJob.Type)int.Parse(a[3]);
+            ret.add_seconds = double.Parse(a[4]);
+            return ret;
         }
     }
+    /* 再投入の種類
+     * 1. 確認してから +x (相対)
+     * 2. 翌日の xx:xx (絶対)
+     */
 }

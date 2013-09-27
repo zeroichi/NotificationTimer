@@ -29,20 +29,20 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.label1 = new System.Windows.Forms.Label();
+            this.lblMessage = new System.Windows.Forms.Label();
             this.lstDoneJobs = new System.Windows.Forms.ListBox();
             this.btnOK = new System.Windows.Forms.Button();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
-            // label1
+            // lblMessage
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(21, 20);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(171, 12);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "次のジョブがタイムアウトになりました:";
+            this.lblMessage.AutoSize = true;
+            this.lblMessage.Location = new System.Drawing.Point(21, 20);
+            this.lblMessage.Name = "lblMessage";
+            this.lblMessage.Size = new System.Drawing.Size(171, 12);
+            this.lblMessage.TabIndex = 0;
+            this.lblMessage.Text = "次のジョブがタイムアウトになりました:";
             // 
             // lstDoneJobs
             // 
@@ -74,11 +74,12 @@
             this.ClientSize = new System.Drawing.Size(493, 438);
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.lstDoneJobs);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.lblMessage);
             this.Name = "NotificationForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "NotificationForm";
             this.TopMost = true;
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.NotificationForm_FormClosed);
             this.Shown += new System.EventHandler(this.NotificationForm_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -87,7 +88,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblMessage;
         private System.Windows.Forms.ListBox lstDoneJobs;
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Timer timer1;

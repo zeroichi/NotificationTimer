@@ -40,6 +40,7 @@
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.label3 = new System.Windows.Forms.Label();
             this.btnQuit = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
@@ -53,6 +54,10 @@
             this.label7 = new System.Windows.Forms.Label();
             this.chkRepeat = new System.Windows.Forms.CheckBox();
             this.chkSound = new System.Windows.Forms.CheckBox();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.txtSoundFile = new System.Windows.Forms.TextBox();
+            this.btnSelectSound = new System.Windows.Forms.Button();
+            this.btnRemove = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // timer1
@@ -63,7 +68,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(57, 49);
+            this.label1.Location = new System.Drawing.Point(56, 14);
             this.label1.Margin = new System.Windows.Forms.Padding(5, 10, 5, 10);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(44, 12);
@@ -73,7 +78,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(168, 83);
+            this.label2.Location = new System.Drawing.Point(167, 48);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(60, 12);
             this.label2.TabIndex = 3;
@@ -81,7 +86,7 @@
             // 
             // txtJobName
             // 
-            this.txtJobName.Location = new System.Drawing.Point(123, 46);
+            this.txtJobName.Location = new System.Drawing.Point(122, 11);
             this.txtJobName.Name = "txtJobName";
             this.txtJobName.Size = new System.Drawing.Size(415, 19);
             this.txtJobName.TabIndex = 1;
@@ -89,7 +94,7 @@
             // 
             // txtTimeOut
             // 
-            this.txtTimeOut.Location = new System.Drawing.Point(234, 80);
+            this.txtTimeOut.Location = new System.Drawing.Point(233, 45);
             this.txtTimeOut.Name = "txtTimeOut";
             this.txtTimeOut.Size = new System.Drawing.Size(100, 19);
             this.txtTimeOut.TabIndex = 4;
@@ -99,7 +104,7 @@
             // 
             // btnAdd
             // 
-            this.btnAdd.Location = new System.Drawing.Point(60, 146);
+            this.btnAdd.Location = new System.Drawing.Point(59, 111);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(100, 30);
             this.btnAdd.TabIndex = 13;
@@ -116,8 +121,10 @@
             this.columnHeader1,
             this.columnHeader2,
             this.columnHeader3,
-            this.columnHeader4});
+            this.columnHeader4,
+            this.columnHeader5});
             this.lvJobList.FullRowSelect = true;
+            this.lvJobList.HideSelection = false;
             this.lvJobList.Location = new System.Drawing.Point(12, 217);
             this.lvJobList.Name = "lvJobList";
             this.lvJobList.Size = new System.Drawing.Size(646, 270);
@@ -145,6 +152,10 @@
             this.columnHeader4.Text = "残り時間";
             this.columnHeader4.Width = 100;
             // 
+            // columnHeader5
+            // 
+            this.columnHeader5.Text = "再投入";
+            // 
             // label3
             // 
             this.label3.AutoSize = true;
@@ -168,7 +179,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(340, 83);
+            this.label4.Location = new System.Drawing.Point(339, 48);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(17, 12);
             this.label4.TabIndex = 5;
@@ -178,7 +189,7 @@
             // 
             this.radRelative.AutoSize = true;
             this.radRelative.Checked = true;
-            this.radRelative.Location = new System.Drawing.Point(59, 81);
+            this.radRelative.Location = new System.Drawing.Point(58, 46);
             this.radRelative.Margin = new System.Windows.Forms.Padding(5, 10, 5, 10);
             this.radRelative.Name = "radRelative";
             this.radRelative.Size = new System.Drawing.Size(101, 16);
@@ -191,7 +202,7 @@
             // radAbsolute
             // 
             this.radAbsolute.AutoSize = true;
-            this.radAbsolute.Location = new System.Drawing.Point(59, 117);
+            this.radAbsolute.Location = new System.Drawing.Point(58, 82);
             this.radAbsolute.Margin = new System.Windows.Forms.Padding(5, 10, 5, 10);
             this.radAbsolute.Name = "radAbsolute";
             this.radAbsolute.Size = new System.Drawing.Size(80, 16);
@@ -203,7 +214,7 @@
             // txtHour
             // 
             this.txtHour.Enabled = false;
-            this.txtHour.Location = new System.Drawing.Point(170, 116);
+            this.txtHour.Location = new System.Drawing.Point(169, 81);
             this.txtHour.Name = "txtHour";
             this.txtHour.Size = new System.Drawing.Size(40, 19);
             this.txtHour.TabIndex = 7;
@@ -213,7 +224,7 @@
             // txtMinute
             // 
             this.txtMinute.Enabled = false;
-            this.txtMinute.Location = new System.Drawing.Point(239, 116);
+            this.txtMinute.Location = new System.Drawing.Point(238, 81);
             this.txtMinute.Name = "txtMinute";
             this.txtMinute.Size = new System.Drawing.Size(40, 19);
             this.txtMinute.TabIndex = 9;
@@ -223,7 +234,7 @@
             // txtSecond
             // 
             this.txtSecond.Enabled = false;
-            this.txtSecond.Location = new System.Drawing.Point(308, 116);
+            this.txtSecond.Location = new System.Drawing.Point(307, 81);
             this.txtSecond.Name = "txtSecond";
             this.txtSecond.Size = new System.Drawing.Size(40, 19);
             this.txtSecond.TabIndex = 11;
@@ -234,7 +245,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Enabled = false;
-            this.label5.Location = new System.Drawing.Point(216, 119);
+            this.label5.Location = new System.Drawing.Point(215, 84);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(17, 12);
             this.label5.TabIndex = 8;
@@ -244,7 +255,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Enabled = false;
-            this.label6.Location = new System.Drawing.Point(285, 119);
+            this.label6.Location = new System.Drawing.Point(284, 84);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(17, 12);
             this.label6.TabIndex = 10;
@@ -254,7 +265,7 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Enabled = false;
-            this.label7.Location = new System.Drawing.Point(354, 119);
+            this.label7.Location = new System.Drawing.Point(353, 84);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(17, 12);
             this.label7.TabIndex = 12;
@@ -263,7 +274,7 @@
             // chkRepeat
             // 
             this.chkRepeat.AutoSize = true;
-            this.chkRepeat.Location = new System.Drawing.Point(305, 153);
+            this.chkRepeat.Location = new System.Drawing.Point(169, 119);
             this.chkRepeat.Name = "chkRepeat";
             this.chkRepeat.Size = new System.Drawing.Size(139, 16);
             this.chkRepeat.TabIndex = 17;
@@ -273,18 +284,53 @@
             // chkSound
             // 
             this.chkSound.AutoSize = true;
-            this.chkSound.Location = new System.Drawing.Point(305, 185);
+            this.chkSound.Location = new System.Drawing.Point(14, 168);
             this.chkSound.Name = "chkSound";
             this.chkSound.Size = new System.Drawing.Size(120, 16);
             this.chkSound.TabIndex = 18;
             this.chkSound.Text = "完了時に音を鳴らす";
             this.chkSound.UseVisualStyleBackColor = true;
             // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
+            // 
+            // txtSoundFile
+            // 
+            this.txtSoundFile.Location = new System.Drawing.Point(140, 166);
+            this.txtSoundFile.Name = "txtSoundFile";
+            this.txtSoundFile.Size = new System.Drawing.Size(377, 19);
+            this.txtSoundFile.TabIndex = 19;
+            // 
+            // btnSelectSound
+            // 
+            this.btnSelectSound.Location = new System.Drawing.Point(523, 164);
+            this.btnSelectSound.Name = "btnSelectSound";
+            this.btnSelectSound.Size = new System.Drawing.Size(66, 23);
+            this.btnSelectSound.TabIndex = 20;
+            this.btnSelectSound.Text = "参照...";
+            this.btnSelectSound.UseVisualStyleBackColor = true;
+            this.btnSelectSound.Click += new System.EventHandler(this.btnSelectSound_Click);
+            // 
+            // btnRemove
+            // 
+            this.btnRemove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnRemove.Location = new System.Drawing.Point(14, 493);
+            this.btnRemove.Name = "btnRemove";
+            this.btnRemove.Size = new System.Drawing.Size(99, 32);
+            this.btnRemove.TabIndex = 21;
+            this.btnRemove.Text = "削除";
+            this.btnRemove.UseVisualStyleBackColor = true;
+            this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(670, 535);
+            this.Controls.Add(this.btnRemove);
+            this.Controls.Add(this.btnSelectSound);
+            this.Controls.Add(this.txtSoundFile);
             this.Controls.Add(this.chkSound);
             this.Controls.Add(this.chkRepeat);
             this.Controls.Add(this.label7);
@@ -306,6 +352,8 @@
             this.Controls.Add(this.label1);
             this.Name = "MainForm";
             this.Text = "通知タイマー";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -337,6 +385,11 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.CheckBox chkRepeat;
         private System.Windows.Forms.CheckBox chkSound;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.TextBox txtSoundFile;
+        private System.Windows.Forms.Button btnSelectSound;
+        private System.Windows.Forms.ColumnHeader columnHeader5;
+        private System.Windows.Forms.Button btnRemove;
     }
 }
 

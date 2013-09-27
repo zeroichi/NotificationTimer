@@ -11,11 +11,13 @@ namespace notification_timer
 {
     public partial class NotificationForm : Form
     {
+        List<TimerJob> jobs;
         List<TimerJob> jobs_done;
 
-        public NotificationForm( List<TimerJob> jobs)
+        public NotificationForm(List<TimerJob> jobs, List<TimerJob> jobs_done)
         {
-            jobs_done = jobs;
+            this.jobs = jobs;
+            this.jobs_done = jobs_done;
             InitializeComponent();
             timer1.Interval = 500;
             timer1.Enabled = true;
@@ -23,6 +25,10 @@ namespace notification_timer
 
         private void timer1_Tick(object sender, EventArgs e)
         {
+            int now_ms = DateTime.Now.Millisecond;
+            Color color_new = now_ms < 500 ? Color.Black : Color.Red;
+            if (lblMessage.ForeColor.ToArgb() != color_new.ToArgb())
+                lblMessage.ForeColor = color_new;
             UpdateList();
         }
 
@@ -40,13 +46,24 @@ namespace notification_timer
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            jobs_done.Clear();
             this.Close();
         }
 
         private void NotificationForm_Shown(object sender, EventArgs e)
         {
             UpdateList();
+        }
+
+        private void NotificationForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            foreach (var each in jobs_done)
+            {
+                if (each.repeat)
+                {
+                    jobs.Add(each.Again());
+                }
+            }
+            jobs_done.Clear();
         }
     }
 }
