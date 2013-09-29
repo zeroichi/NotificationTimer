@@ -336,9 +336,9 @@ namespace notification_timer
         public TimerJob(string name, DateTime timeout, bool again)
         {
             this.name = name;
-            this.timeout = timeout;
             DateTime now = DateTime.Now;
             while (timeout <= now) timeout = timeout.AddDays(1.0);
+            this.timeout = timeout;
             this.repeat = again;
             this.repeat_type = Type.Absolute;
             this.add_seconds = 0;
