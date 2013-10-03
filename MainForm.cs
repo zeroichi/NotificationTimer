@@ -84,13 +84,31 @@ namespace notification_timer
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
+            if (!CheckForm()) return;
+            if (radRelative.Checked)
+            {
+                double seconds = double.Parse(txtTimeOut.Text);
+                jobs.Add(new TimerJob(txtJobName.Text, seconds, chkRepeat.Checked));
+            }
+            else if (radAbsolute.Checked)
+            {
+                DateTime goal = DateTime.Parse(string.Format("{0}:{1}:{2}", txtHour.Text, txtMinute.Text, txtSecond.Text));
+                jobs.Add(new TimerJob(txtJobName.Text, goal, chkRepeat.Checked));
+            }
+            UpdateJobList();
+            txtJobName.Clear();
+            txtJobName.Focus();
+        }
+
+        private bool CheckForm()
+        {
             // check job name
             if (txtJobName.Text.Trim() == "")
             {
                 MessageBox.Show("ジョブ名を入力してください");
                 txtJobName.Clear();
                 txtJobName.Focus();
-                return;
+                return false;
             }
             if (radRelative.Checked)
             {
@@ -100,10 +118,8 @@ namespace notification_timer
                     MessageBox.Show("タイムアウト時間を正の数値で指定してください");
                     txtTimeOut.SelectAll();
                     txtTimeOut.Focus();
-                    return;
+                    return false;
                 }
-                //jobs.Add(new TimerJob(txtJobName.Text, DateTime.Now.AddSeconds(seconds)));
-                jobs.Add(new TimerJob(txtJobName.Text, seconds, chkRepeat.Checked));
             }
             else if (radAbsolute.Checked)
             {
@@ -113,15 +129,10 @@ namespace notification_timer
                     MessageBox.Show("時刻を正しく指定してください");
                     txtHour.SelectAll();
                     txtHour.Focus();
-                    return;
+                    return false;
                 }
-                //if (goal < DateTime.Now) goal = goal.AddDays(1.0);
-                //jobs.Add(new TimerJob(txtJobName.Text, goal));
-                jobs.Add(new TimerJob(txtJobName.Text, goal, chkRepeat.Checked));
             }
-            UpdateJobList();
-            txtJobName.Clear();
-            txtJobName.Focus();
+            return true;
         }
 
         private void UpdateJobList()
@@ -278,6 +289,10 @@ namespace notification_timer
                     jobs.Clear();
                     for (int i = 0; i < c; ++i)
                         jobs.Add(TimerJob.FromString(sr.ReadLine()));
+                    c = int.Parse(sr.ReadLine());
+                    jobs_template.Clear();
+                    for (int i = 0; i < c; ++i)
+                        jobs_template.Add(TimerJob.FromString(sr.ReadLine()));
                 }
                 catch
                 {
@@ -298,7 +313,10 @@ namespace notification_timer
                 sw.WriteLine(txtSoundFile.Text);
                 sw.WriteLine(jobs.Count);
                 foreach (var each in jobs)
-                    sw.WriteLine(each.ToString());
+                    sw.WriteLine(each.Serialize());
+                sw.WriteLine(jobs_template.Count);
+                foreach (var each in jobs_template)
+                    sw.WriteLine(each.Serialize());
             }
         }
 
@@ -313,6 +331,39 @@ namespace notification_timer
             }
             jobs.RemoveAll((x) => remove_list.Contains(x));
             UpdateJobList();
+        }
+
+        private void btnTemplate_Click(object sender, EventArgs e)
+        {
+            if (!CheckForm()) return;
+            if (radRelative.Checked)
+            {
+                double seconds = double.Parse(txtTimeOut.Text);
+                jobs_template.Add(new TimerJob(txtJobName.Text, seconds, chkRepeat.Checked));
+            }
+            else if (radAbsolute.Checked)
+            {
+                DateTime goal = DateTime.Parse(string.Format("{0}:{1}:{2}", txtHour.Text, txtMinute.Text, txtSecond.Text));
+                jobs_template.Add(new TimerJob(txtJobName.Text, goal, chkRepeat.Checked));
+            }
+            UpdateTemplateList();
+        }
+
+        private void UpdateTemplateList()
+        {
+            lstTemplate.Items.Clear();
+            foreach (var each in jobs_template)
+            {
+                lstTemplate.Items.Add(each);
+            }
+        }
+
+        private void lstTemplate_DoubleClick(object sender, EventArgs e)
+        {
+            if (lstTemplate.SelectedItems.Count <= 0) return;
+            TimerJob job = lstTemplate.SelectedItems[0] as TimerJob;
+            if (job == null) return;
+            jobs.Add(job.Again());
         }
     }
 
@@ -366,7 +417,7 @@ namespace notification_timer
             else { throw new InvalidOperationException(); }
         }
 
-        public override string ToString()
+        public string Serialize()
         {
             return string.Format("{0}\t{1}\t{2}\t{3}\t{4}", name, timeout.Ticks, repeat, (int)repeat_type, add_seconds);
         }
@@ -381,6 +432,31 @@ namespace notification_timer
             ret.repeat_type = (TimerJob.Type)int.Parse(a[3]);
             ret.add_seconds = double.Parse(a[4]);
             return ret;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(this.name);
+            sb.Append('(');
+            if (this.repeat_type == Type.Absolute)
+            {
+                sb.AppendFormat("{0,2}:{1,2}", timeout.Hour, timeout.Minute);
+            }
+            else
+            {
+                int total_seconds = (int)this.add_seconds;
+                int hours = total_seconds / 3600;
+                total_seconds -= 3600 * hours;
+                int minutes = total_seconds / 60;
+                total_seconds -= 60 * minutes;
+                if (hours > 0) sb.AppendFormat(" {0}時間", hours);
+                if (minutes > 0) sb.AppendFormat(" {0}分", minutes);
+                if (total_seconds > 0) sb.AppendFormat(" {0}秒", total_seconds);
+            }
+            sb.Append(')');
+            return sb.ToString();
+            //return base.ToString();
         }
     }
     /* 再投入の種類
