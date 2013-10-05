@@ -60,6 +60,7 @@
             this.btnRemove = new System.Windows.Forms.Button();
             this.lstTemplate = new System.Windows.Forms.ListBox();
             this.btnTemplate = new System.Windows.Forms.Button();
+            this.btnTimeSet = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // timer1
@@ -347,11 +348,22 @@
             this.btnTemplate.UseVisualStyleBackColor = true;
             this.btnTemplate.Click += new System.EventHandler(this.btnTemplate_Click);
             // 
+            // btnTimeSet
+            // 
+            this.btnTimeSet.Location = new System.Drawing.Point(320, 48);
+            this.btnTimeSet.Name = "btnTimeSet";
+            this.btnTimeSet.Size = new System.Drawing.Size(26, 23);
+            this.btnTimeSet.TabIndex = 24;
+            this.btnTimeSet.Text = "...";
+            this.btnTimeSet.UseVisualStyleBackColor = true;
+            this.btnTimeSet.Click += new System.EventHandler(this.btnTimeSet_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(670, 535);
+            this.Controls.Add(this.btnTimeSet);
             this.Controls.Add(this.btnTemplate);
             this.Controls.Add(this.lstTemplate);
             this.Controls.Add(this.btnRemove);
@@ -418,6 +430,7 @@
         private System.Windows.Forms.Button btnRemove;
         private System.Windows.Forms.ListBox lstTemplate;
         private System.Windows.Forms.Button btnTemplate;
+        private System.Windows.Forms.Button btnTimeSet;
     }
 }
 

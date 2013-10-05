@@ -365,6 +365,21 @@ namespace notification_timer
             if (job == null) return;
             jobs.Add(job.Again());
         }
+
+        private void btnTimeSet_Click(object sender, EventArgs e)
+        {
+            TimeInputForm time_form = new TimeInputForm();
+            int initial_value;
+            int.TryParse(txtTimeOut.Text, out initial_value);
+            if (initial_value < 0) initial_value = 0;
+            if (initial_value > 359999) initial_value = 359999;
+            time_form.Time = initial_value;
+            if (time_form.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                txtTimeOut.Text = time_form.Time.ToString();
+            }
+            time_form.Dispose();
+        }
     }
 
     public class TimerJob
