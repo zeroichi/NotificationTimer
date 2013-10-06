@@ -37,6 +37,8 @@ namespace notification_timer
             // Ignore all exceptions
             catch { }
             ReloadSound();
+            UpdateJobList();
+            UpdateTemplateList();
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -364,6 +366,7 @@ namespace notification_timer
             TimerJob job = lstTemplate.SelectedItems[0] as TimerJob;
             if (job == null) return;
             jobs.Add(job.Again());
+            UpdateJobList();
         }
 
         private void btnTimeSet_Click(object sender, EventArgs e)
