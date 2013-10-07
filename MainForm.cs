@@ -115,7 +115,7 @@ namespace notification_timer
             if (radRelative.Checked)
             {
                 double seconds;
-                if (!double.TryParse(txtTimeOut.Text, out seconds) || seconds <= 0)
+                if (!double.TryParse(txtTimeOut.Text, out seconds) || seconds < 0)
                 {
                     MessageBox.Show("タイムアウト時間を正の数値で指定してください");
                     txtTimeOut.SelectAll();
@@ -349,6 +349,8 @@ namespace notification_timer
                 jobs_template.Add(new TimerJob(txtJobName.Text, goal, chkRepeat.Checked));
             }
             UpdateTemplateList();
+            txtJobName.Clear();
+            txtJobName.Focus();
         }
 
         private void UpdateTemplateList()
@@ -365,8 +367,23 @@ namespace notification_timer
             if (lstTemplate.SelectedItems.Count <= 0) return;
             TimerJob job = lstTemplate.SelectedItems[0] as TimerJob;
             if (job == null) return;
-            jobs.Add(job.Again());
+            if (job.type == TimerJob.Type.Related && job.add_seconds == 0)
+            {
+                // 時間が 0 の場合は都度時間指定する
+                TimeInputForm time_form = new TimeInputForm();
+                time_form.Time = 0;
+                if (time_form.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    jobs.Add(new TimerJob(job.name, (double)time_form.Time, job.repeat));
+                }
+                time_form.Dispose();
+            }
+            else
+            {
+                jobs.Add(job.Again());
+            }
             UpdateJobList();
+            lstTemplate.SelectedItems.Clear();
         }
 
         private void btnTimeSet_Click(object sender, EventArgs e)
@@ -387,7 +404,7 @@ namespace notification_timer
 
     public class TimerJob
     {
-        enum Type
+        public enum Type
         {
             Null,
             Related,
@@ -397,8 +414,8 @@ namespace notification_timer
         public string name { get; private set; }
         public DateTime timeout { get; private set; }
         public bool repeat { get; private set; }
-        private TimerJob.Type repeat_type;
-        private double add_seconds;
+        public TimerJob.Type type { get; private set; }
+        public double add_seconds { get; private set; }
 
         private TimerJob() { }
 
@@ -409,7 +426,7 @@ namespace notification_timer
             while (timeout <= now) timeout = timeout.AddDays(1.0);
             this.timeout = timeout;
             this.repeat = again;
-            this.repeat_type = Type.Absolute;
+            this.type = Type.Absolute;
             this.add_seconds = 0;
         }
 
@@ -418,17 +435,17 @@ namespace notification_timer
             this.name = name;
             this.timeout = DateTime.Now.AddSeconds(seconds);
             this.repeat = again;
-            this.repeat_type = Type.Related;
+            this.type = Type.Related;
             this.add_seconds = seconds;
         }
 
         public TimerJob Again()
         {
-            if (repeat_type == Type.Related)
+            if (type == Type.Related)
             {
                 return new TimerJob(name, add_seconds, repeat);
             }
-            else if (repeat_type == Type.Absolute)
+            else if (type == Type.Absolute)
             {
                 return new TimerJob(name, timeout, repeat);
             }
@@ -437,7 +454,7 @@ namespace notification_timer
 
         public string Serialize()
         {
-            return string.Format("{0}\t{1}\t{2}\t{3}\t{4}", name, timeout.Ticks, repeat, (int)repeat_type, add_seconds);
+            return string.Format("{0}\t{1}\t{2}\t{3}\t{4}", name, timeout.Ticks, repeat, (int)type, add_seconds);
         }
 
         public static TimerJob FromString(string s)
@@ -447,7 +464,7 @@ namespace notification_timer
             ret.name = a[0];
             ret.timeout = new DateTime(long.Parse(a[1]));
             ret.repeat = bool.Parse(a[2]);
-            ret.repeat_type = (TimerJob.Type)int.Parse(a[3]);
+            ret.type = (TimerJob.Type)int.Parse(a[3]);
             ret.add_seconds = double.Parse(a[4]);
             return ret;
         }
@@ -457,7 +474,7 @@ namespace notification_timer
             StringBuilder sb = new StringBuilder();
             sb.Append(this.name);
             sb.Append('(');
-            if (this.repeat_type == Type.Absolute)
+            if (this.type == Type.Absolute)
             {
                 sb.AppendFormat("{0,2}:{1,2}", timeout.Hour, timeout.Minute);
             }
