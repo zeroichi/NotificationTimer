@@ -143,7 +143,7 @@
             // columnHeader2
             // 
             this.columnHeader2.Text = "ジョブ名";
-            this.columnHeader2.Width = 313;
+            this.columnHeader2.Width = 280;
             // 
             // columnHeader3
             // 
@@ -153,7 +153,7 @@
             // columnHeader4
             // 
             this.columnHeader4.Text = "残り時間";
-            this.columnHeader4.Width = 100;
+            this.columnHeader4.Width = 122;
             // 
             // columnHeader5
             // 
@@ -337,6 +337,7 @@
             this.lstTemplate.Size = new System.Drawing.Size(149, 136);
             this.lstTemplate.TabIndex = 22;
             this.lstTemplate.DoubleClick += new System.EventHandler(this.lstTemplate_DoubleClick);
+            this.lstTemplate.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lstTemplate_KeyDown);
             // 
             // btnTemplate
             // 

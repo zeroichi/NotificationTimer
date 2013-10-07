@@ -17,9 +17,14 @@ namespace notification_timer
      */
     public partial class TimeInputForm : Form
     {
+        private Label[] labels;
+        private int[] dividers;
+
         public TimeInputForm()
         {
             InitializeComponent();
+            labels = new Label[] { lblHour1, lblHour2, lblMinute1, lblMinute2, lblSecond1, lblSecond2 };
+            dividers = new int[] { 36000, 3600, 600, 60, 10, 1 };
         }
 
         private int time;
@@ -44,7 +49,6 @@ namespace notification_timer
         /// <returns>各位の数字を格納した配列</returns>
         private int[] TimeToHMS(int t)
         {
-            int[] dividers = { 36000, 3600, 600, 60, 10, 1 };
             int[] ret = new int[dividers.Length];
             for (int i = 0; i < dividers.Length; ++i)
             {
@@ -57,7 +61,6 @@ namespace notification_timer
 
         private int HMSToTime(int[] hms)
         {
-            int[] dividers = { 36000, 3600, 600, 60, 10, 1 };
             if (hms.Length != dividers.Length) throw new InvalidOperationException();
             int ret = 0;
             for (int i = 0; i < dividers.Length; ++i)
@@ -68,21 +71,18 @@ namespace notification_timer
         private void UpdateSelector()
         {
             var hms = TimeToHMS(this.time);
-            Label[] labels = { lblHour1, lblHour2, lblMinute1, lblMinute2, lblSecond1, lblSecond2 };
             for (int i = 0; i < labels.Length; ++i)
                 labels[i].Text = hms[i].ToString();
         }
 
         private void UpdateTime()
         {
-            Label[] labels = { lblHour1, lblHour2, lblMinute1, lblMinute2, lblSecond1, lblSecond2 };
             int[] hms = labels.Select((l) => int.Parse(l.Text.ToString())).ToArray();
             this.time = HMSToTime(hms);
         }
 
         private void OnMouseDown(object sender, MouseEventArgs e)
         {
-            Label[] labels = { lblHour1, lblHour2, lblMinute1, lblMinute2, lblSecond1, lblSecond2 };
             Label l = sender as Label;
             if (!labels.Contains(l)) return;
             int max_value = 9;
@@ -94,12 +94,12 @@ namespace notification_timer
                 int.TryParse(l.Text, out old_value);
                 // note: old_value is 0 when failed to parse
                 old_value++;
-                if (old_value >= (max_value+1)) old_value = 0;
+                if (old_value >= (max_value + 1)) old_value = 0;
                 l.Text = old_value.ToString();
                 UpdateTime();
             }
             else if (!e.Button.HasFlag(MouseButtons.Left) && e.Button.HasFlag(MouseButtons.Right))
-            { 
+            {
                 // right click -> decrement
                 int old_value;
                 int.TryParse(l.Text, out old_value);

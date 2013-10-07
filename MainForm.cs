@@ -400,6 +400,17 @@ namespace notification_timer
             }
             time_form.Dispose();
         }
+
+        private void lstTemplate_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete && lstTemplate.SelectedItems.Count > 0)
+            {
+                List<object> remove_target = new List<object>();
+                foreach (var each in lstTemplate.SelectedItems)
+                    jobs_template.Remove(each as TimerJob);
+                UpdateTemplateList();
+            }
+        }
     }
 
     public class TimerJob
@@ -473,13 +484,13 @@ namespace notification_timer
         {
             StringBuilder sb = new StringBuilder();
             sb.Append(this.name);
-            sb.Append('(');
             if (this.type == Type.Absolute)
             {
-                sb.AppendFormat("{0,2}:{1,2}", timeout.Hour, timeout.Minute);
+                sb.AppendFormat("({0,2}:{1,2})", timeout.Hour, timeout.Minute);
             }
-            else
+            else if (this.type == Type.Related && this.add_seconds != 0)
             {
+                sb.Append('(');
                 int total_seconds = (int)this.add_seconds;
                 int hours = total_seconds / 3600;
                 total_seconds -= 3600 * hours;
@@ -487,9 +498,9 @@ namespace notification_timer
                 total_seconds -= 60 * minutes;
                 if (hours > 0) sb.AppendFormat(" {0}時間", hours);
                 if (minutes > 0) sb.AppendFormat(" {0}分", minutes);
-                if (total_seconds > 0) sb.AppendFormat(" {0}秒", total_seconds);
+                if (total_seconds > 0 || hours == 0 && minutes == 0) sb.AppendFormat(" {0}秒", total_seconds);
+                sb.Append(')');
             }
-            sb.Append(')');
             return sb.ToString();
             //return base.ToString();
         }
