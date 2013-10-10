@@ -35,12 +35,6 @@
             this.txtJobName = new System.Windows.Forms.TextBox();
             this.txtTimeOut = new System.Windows.Forms.TextBox();
             this.btnAdd = new System.Windows.Forms.Button();
-            this.lvJobList = new System.Windows.Forms.ListView();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.label3 = new System.Windows.Forms.Label();
             this.btnQuit = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
@@ -61,6 +55,12 @@
             this.lstTemplate = new System.Windows.Forms.ListBox();
             this.btnTemplate = new System.Windows.Forms.Button();
             this.btnTimeSet = new System.Windows.Forms.Button();
+            this.lvJobList = new notification_timer.ListViewDB();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // timer1
@@ -114,50 +114,6 @@
             this.btnAdd.Text = "追加(&A)";
             this.btnAdd.UseVisualStyleBackColor = true;
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
-            // 
-            // lvJobList
-            // 
-            this.lvJobList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lvJobList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1,
-            this.columnHeader2,
-            this.columnHeader3,
-            this.columnHeader4,
-            this.columnHeader5});
-            this.lvJobList.FullRowSelect = true;
-            this.lvJobList.HideSelection = false;
-            this.lvJobList.Location = new System.Drawing.Point(12, 217);
-            this.lvJobList.Name = "lvJobList";
-            this.lvJobList.Size = new System.Drawing.Size(646, 270);
-            this.lvJobList.TabIndex = 15;
-            this.lvJobList.UseCompatibleStateImageBehavior = false;
-            this.lvJobList.View = System.Windows.Forms.View.Details;
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Text = "ID";
-            this.columnHeader1.Width = 43;
-            // 
-            // columnHeader2
-            // 
-            this.columnHeader2.Text = "ジョブ名";
-            this.columnHeader2.Width = 280;
-            // 
-            // columnHeader3
-            // 
-            this.columnHeader3.Text = "日時";
-            this.columnHeader3.Width = 116;
-            // 
-            // columnHeader4
-            // 
-            this.columnHeader4.Text = "残り時間";
-            this.columnHeader4.Width = 122;
-            // 
-            // columnHeader5
-            // 
-            this.columnHeader5.Text = "再投入";
             // 
             // label3
             // 
@@ -359,11 +315,57 @@
             this.btnTimeSet.UseVisualStyleBackColor = true;
             this.btnTimeSet.Click += new System.EventHandler(this.btnTimeSet_Click);
             // 
+            // lvJobList
+            // 
+            this.lvJobList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lvJobList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3,
+            this.columnHeader4,
+            this.columnHeader5});
+            this.lvJobList.FullRowSelect = true;
+            this.lvJobList.HideSelection = false;
+            this.lvJobList.Location = new System.Drawing.Point(12, 217);
+            this.lvJobList.Name = "lvJobList";
+            this.lvJobList.Size = new System.Drawing.Size(646, 270);
+            this.lvJobList.TabIndex = 25;
+            this.lvJobList.UseCompatibleStateImageBehavior = false;
+            this.lvJobList.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "ID";
+            this.columnHeader1.Width = 30;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "ジョブ名";
+            this.columnHeader2.Width = 250;
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "期限";
+            this.columnHeader3.Width = 150;
+            // 
+            // columnHeader4
+            // 
+            this.columnHeader4.Text = "残り";
+            this.columnHeader4.Width = 150;
+            // 
+            // columnHeader5
+            // 
+            this.columnHeader5.Text = "再投入";
+            this.columnHeader5.Width = 50;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(670, 535);
+            this.Controls.Add(this.lvJobList);
             this.Controls.Add(this.btnTimeSet);
             this.Controls.Add(this.btnTemplate);
             this.Controls.Add(this.lstTemplate);
@@ -383,7 +385,6 @@
             this.Controls.Add(this.label4);
             this.Controls.Add(this.btnQuit);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.lvJobList);
             this.Controls.Add(this.btnAdd);
             this.Controls.Add(this.txtTimeOut);
             this.Controls.Add(this.txtJobName);
@@ -406,11 +407,6 @@
         private System.Windows.Forms.TextBox txtJobName;
         private System.Windows.Forms.TextBox txtTimeOut;
         private System.Windows.Forms.Button btnAdd;
-        private System.Windows.Forms.ListView lvJobList;
-        private System.Windows.Forms.ColumnHeader columnHeader1;
-        private System.Windows.Forms.ColumnHeader columnHeader2;
-        private System.Windows.Forms.ColumnHeader columnHeader3;
-        private System.Windows.Forms.ColumnHeader columnHeader4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btnQuit;
         private System.Windows.Forms.Label label4;
@@ -427,11 +423,16 @@
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.TextBox txtSoundFile;
         private System.Windows.Forms.Button btnSelectSound;
-        private System.Windows.Forms.ColumnHeader columnHeader5;
         private System.Windows.Forms.Button btnRemove;
         private System.Windows.Forms.ListBox lstTemplate;
         private System.Windows.Forms.Button btnTemplate;
         private System.Windows.Forms.Button btnTimeSet;
+        private ListViewDB lvJobList;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.ColumnHeader columnHeader4;
+        private System.Windows.Forms.ColumnHeader columnHeader5;
     }
 }
 

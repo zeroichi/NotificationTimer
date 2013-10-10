@@ -19,6 +19,7 @@ namespace notification_timer
         Control[] control_set_related;
         System.Media.SoundPlayer sound_done;
         const string settings_filename = "settings.txt";
+        //private ListViewDB lvJobList;
 
         public MainForm()
         {
@@ -140,6 +141,7 @@ namespace notification_timer
         private void UpdateJobList()
         {
             if (jobs == null) return;
+            lvJobList.BeginUpdate();
             DateTime now = DateTime.Now;
             if (jobs.Count != lvJobList.Items.Count)
             {
@@ -158,6 +160,7 @@ namespace notification_timer
                     lvJobList.Items[i].SubItems[3].Text = remaining;
                 }
             }
+            lvJobList.EndUpdate();
         }
 
         private string TimeSpanToString(TimeSpan ts)
@@ -509,4 +512,17 @@ namespace notification_timer
      * 1. 確認してから +x (相対)
      * 2. 翌日の xx:xx (絶対)
      */
+
+    // Double Buffer を使用し，ちらつきのない描画をする ListView
+    public class ListViewDB : System.Windows.Forms.ListView
+    {
+        protected override bool DoubleBuffered
+        {
+            get
+            {
+                return true;
+            }
+            set { }
+        }
+    }
 }
