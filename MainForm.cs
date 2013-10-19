@@ -20,7 +20,27 @@ namespace notification_timer
         System.Media.SoundPlayer sound_done;
         const string settings_xml = "settings.xml";
         const string joblist_filename = "joblist.txt";
-        Settings settings;
+
+        private Settings _settings;
+        Settings settings
+        {
+            get
+            {
+                return _settings;
+            }
+            set
+            {
+                System.Diagnostics.Debug.WriteLine("settings.set called");
+                _settings = value;
+                if(sound_done!=null)sound_done.Dispose();
+                if (_settings.sound)
+                {
+                    sound_done = new System.Media.SoundPlayer(_settings.sound_file);
+                }
+                fileSystemWatcher1.Path = _settings.joblist_dir;
+                fileSystemWatcher1.Filter = joblist_filename;
+            }
+        }
 
         public MainForm()
         {
@@ -38,7 +58,6 @@ namespace notification_timer
             }
             // Ignore all exceptions
             catch { }
-            ReloadSound();
             UpdateJobList();
             UpdateTemplateList();
         }
@@ -235,13 +254,6 @@ namespace notification_timer
             }
         }
 
-        private void ReloadSound()
-        {
-            if (sound_done != null) sound_done.Dispose();
-            sound_done = new System.Media.SoundPlayer(settings.sound_file);
-            sound_done.Load();
-        }
-
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (sound_done != null) sound_done.Dispose();
@@ -265,6 +277,7 @@ namespace notification_timer
         {
             using (var xml = System.Xml.XmlReader.Create("test.xml"))
             {
+                var loaded_settings = new Settings();
                 var doc = new System.Xml.XmlDocument();
                 doc.Load(xml);
                 foreach (var child in doc.ChildNodes)
@@ -273,12 +286,13 @@ namespace notification_timer
                     if (node_settings == null || node_settings.Name != "settings")
                         continue;
                     var node1 = node_settings.GetElementsByTagName("joblistdir");
-                    settings.joblist_dir = node1.Count > 0 ? node1[0].InnerText : "";
+                    loaded_settings.joblist_dir = node1.Count > 0 ? node1[0].InnerText : "";
                     var node2 = node_settings.GetElementsByTagName("sound");
-                    bool.TryParse(node2[0].InnerText, out settings.sound);
+                    bool.TryParse(node2[0].InnerText, out loaded_settings.sound);
                     var node3 = node_settings.GetElementsByTagName("soundfile");
-                    settings.sound_file = node3.Count > 0 ? node3[0].InnerText : "";
+                    loaded_settings.sound_file = node3.Count > 0 ? node3[0].InnerText : "";
                 }
+                this.settings = loaded_settings;
             }
             string filepath = System.IO.Path.Combine(settings.joblist_dir, joblist_filename);
             using (var sr = new System.IO.StreamReader(filepath))
@@ -436,6 +450,11 @@ namespace notification_timer
                 this.settings = f.settings;
             }
             f.Dispose();
+        }
+
+        private void fileSystemWatcher1_Changed(object sender, System.IO.FileSystemEventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine("Filesystem changed: "+e.FullPath);
         }
     }
 

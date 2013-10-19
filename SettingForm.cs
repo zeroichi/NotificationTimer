@@ -93,8 +93,8 @@ namespace notification_timer
 
         private void btnSelectSound_Click(object sender, EventArgs e)
         {
-            if (openFileDialog1.FileName == "")
-                openFileDialog1.FileName = settings_var.sound_file;
+            openFileDialog1.InitialDirectory = System.IO.Path.GetDirectoryName(settings_var.sound_file);
+            openFileDialog1.FileName = System.IO.Path.GetFileName(settings_var.sound_file);
             if (DialogResult.OK == openFileDialog1.ShowDialog())
             {
                 settings_var.sound_file = openFileDialog1.FileName;
