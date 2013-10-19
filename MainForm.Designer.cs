@@ -53,7 +53,7 @@
             this.btnTemplate = new System.Windows.Forms.Button();
             this.btnTimeSet = new System.Windows.Forms.Button();
             this.btnSetting = new System.Windows.Forms.Button();
-            this.lvJobList = new notification_timer.ListViewDB();
+            this.lvJobList = new notification_timer.ListViewDoubleBuffered();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -404,7 +404,7 @@
         private System.Windows.Forms.ListBox lstTemplate;
         private System.Windows.Forms.Button btnTemplate;
         private System.Windows.Forms.Button btnTimeSet;
-        private ListViewDB lvJobList;
+        private ListViewDoubleBuffered lvJobList;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader3;

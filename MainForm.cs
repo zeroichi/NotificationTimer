@@ -536,16 +536,5 @@ namespace notification_timer
      * 2. 翌日の xx:xx (絶対)
      */
 
-    // Double Buffer を使用し，ちらつきのない描画をする ListView
-    public class ListViewDB : System.Windows.Forms.ListView
-    {
-        protected override bool DoubleBuffered
-        {
-            get
-            {
-                return true;
-            }
-            set { }
-        }
-    }
+
 }
