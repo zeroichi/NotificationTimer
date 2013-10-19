@@ -18,8 +18,9 @@ namespace notification_timer
         Control[] control_set_absolute;
         Control[] control_set_related;
         System.Media.SoundPlayer sound_done;
-        const string settings_filename = "settings.txt";
-        //private ListViewDB lvJobList;
+        const string settings_xml = "settings.xml";
+        const string joblist_filename = "joblist.txt";
+        Settings settings;
 
         public MainForm()
         {
@@ -71,7 +72,7 @@ namespace notification_timer
                     notification_form.Show();
                 }
             }
-            if (chkSound.Checked && play_sound)
+            if (settings.sound && play_sound)
             {
                 try
                 {
@@ -79,7 +80,7 @@ namespace notification_timer
                 }
                 catch (System.IO.FileNotFoundException)
                 {
-                    chkSound.Checked = false;
+                    // TODO: エラー処理
                 }
             }
             UpdateJobList();
@@ -196,7 +197,6 @@ namespace notification_timer
             TextBox textbox = sender as TextBox;
             if (textbox == null) return;
             textbox.SelectAll();
-            //System.Diagnostics.Debug.WriteLine(textbox.Name);
         }
 
         private void txtTimeOut_KeyDown(object sender, KeyEventArgs e)
@@ -235,27 +235,11 @@ namespace notification_timer
             }
         }
 
-        private void btnSelectSound_Click(object sender, EventArgs e)
-        {
-            if (DialogResult.OK == openFileDialog1.ShowDialog())
-            {
-                txtSoundFile.Text = openFileDialog1.FileName;
-                ReloadSound();
-            }
-        }
-
         private void ReloadSound()
         {
             if (sound_done != null) sound_done.Dispose();
-            try
-            {
-                sound_done = new System.Media.SoundPlayer(txtSoundFile.Text);
-                sound_done.Load();
-            }
-            catch
-            {
-                chkSound.Checked = false;
-            }
+            sound_done = new System.Media.SoundPlayer(settings.sound_file);
+            sound_done.Load();
         }
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -279,7 +263,25 @@ namespace notification_timer
 
         private void LoadSettings()
         {
-            using (var sr = new System.IO.StreamReader(settings_filename))
+            using (var xml = System.Xml.XmlReader.Create("test.xml"))
+            {
+                var doc = new System.Xml.XmlDocument();
+                doc.Load(xml);
+                foreach (var child in doc.ChildNodes)
+                {
+                    var node_settings = child as System.Xml.XmlElement;
+                    if (node_settings == null || node_settings.Name != "settings")
+                        continue;
+                    var node1 = node_settings.GetElementsByTagName("joblistdir");
+                    settings.joblist_dir = node1.Count > 0 ? node1[0].InnerText : "";
+                    var node2 = node_settings.GetElementsByTagName("sound");
+                    bool.TryParse(node2[0].InnerText, out settings.sound);
+                    var node3 = node_settings.GetElementsByTagName("soundfile");
+                    settings.sound_file = node3.Count > 0 ? node3[0].InnerText : "";
+                }
+            }
+            string filepath = System.IO.Path.Combine(settings.joblist_dir, joblist_filename);
+            using (var sr = new System.IO.StreamReader(filepath))
             {
                 try
                 {
@@ -289,7 +291,6 @@ namespace notification_timer
                     txtSecond.Text = sr.ReadLine();
                     radRelative.Checked = "1" == sr.ReadLine();
                     radAbsolute.Checked = !radRelative.Checked;
-                    txtSoundFile.Text = sr.ReadLine();
                     int c = int.Parse(sr.ReadLine());
                     jobs.Clear();
                     for (int i = 0; i < c; ++i)
@@ -308,14 +309,24 @@ namespace notification_timer
 
         private void SaveSettings()
         {
-            using (var sw = new System.IO.StreamWriter(settings_filename))
+            var xmlsettings = new System.Xml.XmlWriterSettings();
+            xmlsettings.Indent = true;
+            using (var xml = System.Xml.XmlWriter.Create("test.xml", xmlsettings))
+            {
+                xml.WriteStartElement("settings");
+                xml.WriteElementString("joblistdir", settings.joblist_dir);
+                xml.WriteElementString("sound", settings.sound.ToString());
+                xml.WriteElementString("soundfile", settings.sound_file);
+                xml.WriteEndElement(); // settings
+            }
+            string filepath = System.IO.Path.Combine(settings.joblist_dir, joblist_filename);
+            using (var sw = new System.IO.StreamWriter(filepath))
             {
                 sw.WriteLine(txtTimeOut.Text);
                 sw.WriteLine(txtHour.Text);
                 sw.WriteLine(txtMinute.Text);
                 sw.WriteLine(txtSecond.Text);
                 sw.WriteLine(radRelative.Checked ? "1" : "0");
-                sw.WriteLine(txtSoundFile.Text);
                 sw.WriteLine(jobs.Count);
                 foreach (var each in jobs)
                     sw.WriteLine(each.Serialize());
@@ -327,6 +338,7 @@ namespace notification_timer
 
         private void btnRemove_Click(object sender, EventArgs e)
         {
+
             if (lvJobList.SelectedItems.Count == 0) return;
             if (DialogResult.No == MessageBox.Show("選択されたジョブを削除します．よろしいですか？", "確認", MessageBoxButtons.YesNo)) return;
             List<TimerJob> remove_list = new List<TimerJob>();
@@ -413,6 +425,17 @@ namespace notification_timer
                     jobs_template.Remove(each as TimerJob);
                 UpdateTemplateList();
             }
+        }
+
+        private void btnSetting_Click(object sender, EventArgs e)
+        {
+            SettingForm f = new SettingForm();
+            f.settings = this.settings;
+            if (DialogResult.OK == f.ShowDialog())
+            {
+                this.settings = f.settings;
+            }
+            f.Dispose();
         }
     }
 

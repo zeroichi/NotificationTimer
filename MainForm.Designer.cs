@@ -47,14 +47,12 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.chkRepeat = new System.Windows.Forms.CheckBox();
-            this.chkSound = new System.Windows.Forms.CheckBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.txtSoundFile = new System.Windows.Forms.TextBox();
-            this.btnSelectSound = new System.Windows.Forms.Button();
             this.btnRemove = new System.Windows.Forms.Button();
             this.lstTemplate = new System.Windows.Forms.ListBox();
             this.btnTemplate = new System.Windows.Forms.Button();
             this.btnTimeSet = new System.Windows.Forms.Button();
+            this.btnSetting = new System.Windows.Forms.Button();
             this.lvJobList = new notification_timer.ListViewDB();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -240,36 +238,9 @@
             this.chkRepeat.Text = "完了時にジョブを再投入(&R)";
             this.chkRepeat.UseVisualStyleBackColor = true;
             // 
-            // chkSound
-            // 
-            this.chkSound.AutoSize = true;
-            this.chkSound.Location = new System.Drawing.Point(14, 168);
-            this.chkSound.Name = "chkSound";
-            this.chkSound.Size = new System.Drawing.Size(120, 16);
-            this.chkSound.TabIndex = 18;
-            this.chkSound.Text = "完了時に音を鳴らす";
-            this.chkSound.UseVisualStyleBackColor = true;
-            // 
             // openFileDialog1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
-            // 
-            // txtSoundFile
-            // 
-            this.txtSoundFile.Location = new System.Drawing.Point(140, 166);
-            this.txtSoundFile.Name = "txtSoundFile";
-            this.txtSoundFile.Size = new System.Drawing.Size(377, 19);
-            this.txtSoundFile.TabIndex = 19;
-            // 
-            // btnSelectSound
-            // 
-            this.btnSelectSound.Location = new System.Drawing.Point(523, 164);
-            this.btnSelectSound.Name = "btnSelectSound";
-            this.btnSelectSound.Size = new System.Drawing.Size(66, 23);
-            this.btnSelectSound.TabIndex = 20;
-            this.btnSelectSound.Text = "参照...";
-            this.btnSelectSound.UseVisualStyleBackColor = true;
-            this.btnSelectSound.Click += new System.EventHandler(this.btnSelectSound_Click);
             // 
             // btnRemove
             // 
@@ -314,6 +285,17 @@
             this.btnTimeSet.Text = "...";
             this.btnTimeSet.UseVisualStyleBackColor = true;
             this.btnTimeSet.Click += new System.EventHandler(this.btnTimeSet_Click);
+            // 
+            // btnSetting
+            // 
+            this.btnSetting.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSetting.Location = new System.Drawing.Point(452, 493);
+            this.btnSetting.Name = "btnSetting";
+            this.btnSetting.Size = new System.Drawing.Size(100, 30);
+            this.btnSetting.TabIndex = 26;
+            this.btnSetting.Text = "設定(&S)";
+            this.btnSetting.UseVisualStyleBackColor = true;
+            this.btnSetting.Click += new System.EventHandler(this.btnSetting_Click);
             // 
             // lvJobList
             // 
@@ -365,14 +347,12 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(670, 535);
+            this.Controls.Add(this.btnSetting);
             this.Controls.Add(this.lvJobList);
             this.Controls.Add(this.btnTimeSet);
             this.Controls.Add(this.btnTemplate);
             this.Controls.Add(this.lstTemplate);
             this.Controls.Add(this.btnRemove);
-            this.Controls.Add(this.btnSelectSound);
-            this.Controls.Add(this.txtSoundFile);
-            this.Controls.Add(this.chkSound);
             this.Controls.Add(this.chkRepeat);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
@@ -419,10 +399,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.CheckBox chkRepeat;
-        private System.Windows.Forms.CheckBox chkSound;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
-        private System.Windows.Forms.TextBox txtSoundFile;
-        private System.Windows.Forms.Button btnSelectSound;
         private System.Windows.Forms.Button btnRemove;
         private System.Windows.Forms.ListBox lstTemplate;
         private System.Windows.Forms.Button btnTemplate;
@@ -433,6 +410,7 @@
         private System.Windows.Forms.ColumnHeader columnHeader3;
         private System.Windows.Forms.ColumnHeader columnHeader4;
         private System.Windows.Forms.ColumnHeader columnHeader5;
+        private System.Windows.Forms.Button btnSetting;
     }
 }
 
