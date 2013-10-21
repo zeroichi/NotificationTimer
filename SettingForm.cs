@@ -28,6 +28,12 @@ namespace notification_timer
             }
         }
 
+        public SettingForm()
+        {
+            InitializeComponent();
+            settings = new Settings();
+        }
+
         private bool Validation()
         {
             if (chkSound.Checked)
@@ -70,11 +76,6 @@ namespace notification_timer
             return true;
         }
 
-        public SettingForm()
-        {
-            InitializeComponent();
-        }
-
         private void SettingForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (this.DialogResult == System.Windows.Forms.DialogResult.Cancel) return;
@@ -111,35 +112,6 @@ namespace notification_timer
                 settings_var.joblist_dir = folderBrowserDialog1.SelectedPath;
                 lblListPath.Text = folderBrowserDialog1.SelectedPath;
             }
-        }
-    }
-
-    public struct Settings
-    {
-        public bool sound;
-        public string sound_file;
-        public string joblist_dir;
-
-        public void Save(string filename)
-        {
-            using (var sw = new StreamWriter(filename))
-            {
-                sw.WriteLine(sound);
-                sw.WriteLine(sound_file);
-                sw.WriteLine(joblist_dir);
-            }
-        }
-
-        public static Settings Load(string filename)
-        {
-            Settings ret;
-            using (var sr = new StreamReader(filename))
-            {
-                ret.sound = bool.Parse(sr.ReadLine());
-                ret.sound_file = sr.ReadLine();
-                ret.joblist_dir = sr.ReadLine();
-            }
-            return ret;
         }
     }
 }

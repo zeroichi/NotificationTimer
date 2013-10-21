@@ -11,8 +11,17 @@ namespace notification_timer
 {
     public partial class MainForm : Form
     {
+        /// <summary>
+        /// 実行中のジョブリスト
+        /// </summary>
         List<TimerJob> jobs;
+        /// <summary>
+        /// 実行が完了し，確認待ちのジョブリスト
+        /// </summary>
         List<TimerJob> jobs_done;
+        /// <summary>
+        /// ジョブのテンプレート
+        /// </summary>
         List<TimerJob> jobs_template;
         NotificationForm notification_form;
         Control[] control_set_absolute;
@@ -22,6 +31,9 @@ namespace notification_timer
         const string joblist_filename = "joblist.txt";
 
         private Settings _settings;
+        /// <summary>
+        /// アプリケーションの基本設定
+        /// </summary>
         Settings settings
         {
             get
@@ -30,9 +42,10 @@ namespace notification_timer
             }
             set
             {
-                System.Diagnostics.Debug.WriteLine("settings.set called");
+                // 設定を sound_done, fileSystemWatcher1 に反映
+                //System.Diagnostics.Debug.WriteLine("settings.set called");
                 _settings = value;
-                if(sound_done!=null)sound_done.Dispose();
+                if (sound_done != null) sound_done.Dispose();
                 if (_settings.sound)
                 {
                     sound_done = new System.Media.SoundPlayer(_settings.sound_file);
@@ -52,12 +65,29 @@ namespace notification_timer
             control_set_related = new Control[] { label2, label4, txtTimeOut };
             control_set_absolute = new Control[] { txtHour, txtMinute, txtSecond, label5, label6, label7 };
             openFileDialog1.Filter = "Wave サウンド (*.wav)|*.wav|すべてのファイル (*.*)|*.*";
+            // ファイルから基本設定を読み込む
             try
             {
-                LoadSettings();
+                this.settings = Settings.Load(settings_xml);
             }
-            // Ignore all exceptions
-            catch { }
+            catch
+            {
+                MessageBox.Show("設定ファイルを読み込めませんでした．初期設定を行ってください．");
+                this.settings = new Settings(false, "", "."); // デフォルト設定
+                using (var f = new SettingForm())
+                {
+                    if (DialogResult.OK == f.ShowDialog())
+                    {
+                        this.settings = f.settings;
+                    }
+                }
+            }
+            // ファイルからジョブリストを読み込む
+            try
+            {
+                LoadJobList();
+            }
+            catch { } // あらゆるエラーを無視
             UpdateJobList();
             UpdateTemplateList();
         }
@@ -67,6 +97,7 @@ namespace notification_timer
             bool play_sound = false;
             if (jobs == null) return;
             DateTime now = DateTime.Now;
+            // タイムアウトしたかどうかを確認し，該当するものは jobs_done へ移す
             foreach (var each in jobs)
             {
                 if (each.timeout < now)
@@ -77,6 +108,7 @@ namespace notification_timer
                 }
             }
             jobs.RemoveAll((x) => jobs_done.Contains(x));
+            // jobs_done が空でなければ，通知ウィンドウを表示する
             if (jobs_done.Count > 0)
             {
                 if (notification_form == null || notification_form.IsDisposed)
@@ -91,6 +123,8 @@ namespace notification_timer
                     notification_form.Show();
                 }
             }
+            // たったいま完了したジョブがあり，設定でサウンドが有効になっている場合は wav を再生する
+            // for の外に出しているのは，複数のジョブが同時に完了した時に何度も再生するのを防止するため
             if (settings.sound && play_sound)
             {
                 try
@@ -99,7 +133,7 @@ namespace notification_timer
                 }
                 catch (System.IO.FileNotFoundException)
                 {
-                    // TODO: エラー処理
+                    // TODO: サウンドが再生できない場合のエラー処理
                 }
             }
             UpdateJobList();
@@ -262,7 +296,7 @@ namespace notification_timer
             {
                 try
                 {
-                    SaveSettings();
+                    this.settings.Save(settings_xml);
                     break;
                 }
                 catch (Exception ex)
@@ -273,74 +307,38 @@ namespace notification_timer
             }
         }
 
-        private void LoadSettings()
+        private void LoadJobList()
         {
-            using (var xml = System.Xml.XmlReader.Create("test.xml"))
-            {
-                var loaded_settings = new Settings();
-                var doc = new System.Xml.XmlDocument();
-                doc.Load(xml);
-                foreach (var child in doc.ChildNodes)
-                {
-                    var node_settings = child as System.Xml.XmlElement;
-                    if (node_settings == null || node_settings.Name != "settings")
-                        continue;
-                    var node1 = node_settings.GetElementsByTagName("joblistdir");
-                    loaded_settings.joblist_dir = node1.Count > 0 ? node1[0].InnerText : "";
-                    var node2 = node_settings.GetElementsByTagName("sound");
-                    bool.TryParse(node2[0].InnerText, out loaded_settings.sound);
-                    var node3 = node_settings.GetElementsByTagName("soundfile");
-                    loaded_settings.sound_file = node3.Count > 0 ? node3[0].InnerText : "";
-                }
-                this.settings = loaded_settings;
-            }
             string filepath = System.IO.Path.Combine(settings.joblist_dir, joblist_filename);
             using (var sr = new System.IO.StreamReader(filepath))
             {
-                try
-                {
-                    txtTimeOut.Text = sr.ReadLine();
-                    txtHour.Text = sr.ReadLine();
-                    txtMinute.Text = sr.ReadLine();
-                    txtSecond.Text = sr.ReadLine();
-                    radRelative.Checked = "1" == sr.ReadLine();
-                    radAbsolute.Checked = !radRelative.Checked;
-                    int c = int.Parse(sr.ReadLine());
-                    jobs.Clear();
-                    for (int i = 0; i < c; ++i)
-                        jobs.Add(TimerJob.FromString(sr.ReadLine()));
-                    c = int.Parse(sr.ReadLine());
-                    jobs_template.Clear();
-                    for (int i = 0; i < c; ++i)
-                        jobs_template.Add(TimerJob.FromString(sr.ReadLine()));
-                }
-                catch
-                {
-
-                }
+                //txtTimeOut.Text = sr.ReadLine();
+                //txtHour.Text = sr.ReadLine();
+                //txtMinute.Text = sr.ReadLine();
+                //txtSecond.Text = sr.ReadLine();
+                //radRelative.Checked = "1" == sr.ReadLine();
+                //radAbsolute.Checked = !radRelative.Checked;
+                int c = int.Parse(sr.ReadLine());
+                jobs.Clear();
+                for (int i = 0; i < c; ++i)
+                    jobs.Add(TimerJob.FromString(sr.ReadLine()));
+                c = int.Parse(sr.ReadLine());
+                jobs_template.Clear();
+                for (int i = 0; i < c; ++i)
+                    jobs_template.Add(TimerJob.FromString(sr.ReadLine()));
             }
         }
 
-        private void SaveSettings()
+        private void SaveJobList()
         {
-            var xmlsettings = new System.Xml.XmlWriterSettings();
-            xmlsettings.Indent = true;
-            using (var xml = System.Xml.XmlWriter.Create("test.xml", xmlsettings))
-            {
-                xml.WriteStartElement("settings");
-                xml.WriteElementString("joblistdir", settings.joblist_dir);
-                xml.WriteElementString("sound", settings.sound.ToString());
-                xml.WriteElementString("soundfile", settings.sound_file);
-                xml.WriteEndElement(); // settings
-            }
             string filepath = System.IO.Path.Combine(settings.joblist_dir, joblist_filename);
             using (var sw = new System.IO.StreamWriter(filepath))
             {
-                sw.WriteLine(txtTimeOut.Text);
-                sw.WriteLine(txtHour.Text);
-                sw.WriteLine(txtMinute.Text);
-                sw.WriteLine(txtSecond.Text);
-                sw.WriteLine(radRelative.Checked ? "1" : "0");
+                //sw.WriteLine(txtTimeOut.Text);
+                //sw.WriteLine(txtHour.Text);
+                //sw.WriteLine(txtMinute.Text);
+                //sw.WriteLine(txtSecond.Text);
+                //sw.WriteLine(radRelative.Checked ? "1" : "0");
                 sw.WriteLine(jobs.Count);
                 foreach (var each in jobs)
                     sw.WriteLine(each.Serialize());
@@ -448,13 +446,15 @@ namespace notification_timer
             if (DialogResult.OK == f.ShowDialog())
             {
                 this.settings = f.settings;
+                // TODO: ジョブリスト保存ディレクトリが変更され，変更先に既にジョブリストが
+                // 存在する場合，それを読み込むかどうか確認するメッセージを出す
             }
             f.Dispose();
         }
 
         private void fileSystemWatcher1_Changed(object sender, System.IO.FileSystemEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine("Filesystem changed: "+e.FullPath);
+            System.Diagnostics.Debug.WriteLine("Filesystem changed: " + e.FullPath);
         }
     }
 
@@ -462,8 +462,17 @@ namespace notification_timer
     {
         public enum Type
         {
+            /// <summary>
+            /// 無効な TimerJob．
+            /// </summary>
             Null,
+            /// <summary>
+            /// 投入時からタイムアウトまでの時間の長さを相対的に指定するタイプ．
+            /// </summary>
             Related,
+            /// <summary>
+            /// 絶対的なタイムアウト時刻を指定するタイプ．
+            /// </summary>
             Absolute,
         }
 
@@ -550,10 +559,4 @@ namespace notification_timer
             //return base.ToString();
         }
     }
-    /* 再投入の種類
-     * 1. 確認してから +x (相対)
-     * 2. 翌日の xx:xx (絶対)
-     */
-
-
 }
