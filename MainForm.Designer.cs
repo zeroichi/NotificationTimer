@@ -118,7 +118,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 202);
+            this.label3.Location = new System.Drawing.Point(12, 164);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(56, 12);
             this.label3.TabIndex = 14;
@@ -127,7 +127,7 @@
             // btnQuit
             // 
             this.btnQuit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnQuit.Location = new System.Drawing.Point(558, 493);
+            this.btnQuit.Location = new System.Drawing.Point(556, 418);
             this.btnQuit.Name = "btnQuit";
             this.btnQuit.Size = new System.Drawing.Size(100, 30);
             this.btnQuit.TabIndex = 16;
@@ -177,6 +177,7 @@
             this.txtHour.Name = "txtHour";
             this.txtHour.Size = new System.Drawing.Size(40, 19);
             this.txtHour.TabIndex = 7;
+            this.txtHour.Text = "0";
             this.txtHour.Enter += new System.EventHandler(this.txtJobName_Enter);
             this.txtHour.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtTimeOut_KeyDown);
             // 
@@ -187,6 +188,7 @@
             this.txtMinute.Name = "txtMinute";
             this.txtMinute.Size = new System.Drawing.Size(40, 19);
             this.txtMinute.TabIndex = 9;
+            this.txtMinute.Text = "0";
             this.txtMinute.Enter += new System.EventHandler(this.txtJobName_Enter);
             this.txtMinute.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtTimeOut_KeyDown);
             // 
@@ -197,6 +199,7 @@
             this.txtSecond.Name = "txtSecond";
             this.txtSecond.Size = new System.Drawing.Size(40, 19);
             this.txtSecond.TabIndex = 11;
+            this.txtSecond.Text = "0";
             this.txtSecond.Enter += new System.EventHandler(this.txtJobName_Enter);
             this.txtSecond.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtTimeOut_KeyDown);
             // 
@@ -247,7 +250,7 @@
             // btnRemove
             // 
             this.btnRemove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnRemove.Location = new System.Drawing.Point(14, 493);
+            this.btnRemove.Location = new System.Drawing.Point(12, 418);
             this.btnRemove.Name = "btnRemove";
             this.btnRemove.Size = new System.Drawing.Size(99, 32);
             this.btnRemove.TabIndex = 21;
@@ -291,7 +294,7 @@
             // btnSetting
             // 
             this.btnSetting.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSetting.Location = new System.Drawing.Point(452, 493);
+            this.btnSetting.Location = new System.Drawing.Point(450, 418);
             this.btnSetting.Name = "btnSetting";
             this.btnSetting.Size = new System.Drawing.Size(100, 30);
             this.btnSetting.TabIndex = 26;
@@ -312,9 +315,9 @@
             this.columnHeader5});
             this.lvJobList.FullRowSelect = true;
             this.lvJobList.HideSelection = false;
-            this.lvJobList.Location = new System.Drawing.Point(12, 217);
+            this.lvJobList.Location = new System.Drawing.Point(12, 179);
             this.lvJobList.Name = "lvJobList";
-            this.lvJobList.Size = new System.Drawing.Size(646, 270);
+            this.lvJobList.Size = new System.Drawing.Size(646, 233);
             this.lvJobList.TabIndex = 25;
             this.lvJobList.UseCompatibleStateImageBehavior = false;
             this.lvJobList.View = System.Windows.Forms.View.Details;
@@ -354,7 +357,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(670, 535);
+            this.ClientSize = new System.Drawing.Size(670, 462);
             this.Controls.Add(this.btnSetting);
             this.Controls.Add(this.lvJobList);
             this.Controls.Add(this.btnTimeSet);

@@ -286,25 +286,44 @@ namespace notification_timer
                 if (DialogResult.No == MessageBox.Show("終了してもよろしいですか？", "確認", MessageBoxButtons.YesNo))
                     e.Cancel = true;
             }
+            if (!e.Cancel)
+            {
+                bool retry = false;
+                do
+                {
+                    try
+                    {
+                        SaveJobList();
+                        retry = false;
+                    }
+                    catch (Exception ex)
+                    {
+                        switch (MessageBox.Show(string.Format("ジョブリストを保存できませんでした:\r\n{0}", ex.ToString()), "ジョブリスト保存エラー", MessageBoxButtons.AbortRetryIgnore))
+                        {
+                            case System.Windows.Forms.DialogResult.Abort:
+                                // アプリケーションの終了をキャンセル
+                                retry = false;
+                                e.Cancel = true;
+                                break;
+                            case System.Windows.Forms.DialogResult.Ignore:
+                                // ジョブリストを保存せずに強制終了
+                                retry = false;
+                                e.Cancel = false;
+                                break;
+                            case System.Windows.Forms.DialogResult.Retry:
+                                // ジョブリスト保存を再試行
+                                retry = true;
+                                break;
+                        }
+                    }
+                } while (retry);
+            }
         }
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (sound_done != null) sound_done.Dispose();
             if (notification_form != null) notification_form.Dispose();
-            while (true)
-            {
-                try
-                {
-                    this.settings.Save(settings_xml);
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    if (DialogResult.Cancel == MessageBox.Show(string.Format("設定を保存できませんでした:\r\n{0}", ex.ToString()), "設定保存エラー", MessageBoxButtons.RetryCancel))
-                        break;
-                }
-            }
         }
 
         private void LoadJobList()
@@ -450,6 +469,20 @@ namespace notification_timer
                 // 存在する場合，それを読み込むかどうか確認するメッセージを出す
             }
             f.Dispose();
+            // 設定ファイルに保存
+            while (true)
+            {
+                try
+                {
+                    this.settings.Save(settings_xml);
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    if (DialogResult.Cancel == MessageBox.Show(string.Format("設定をファイルに保存できませんでした:\r\n{0}", ex.ToString()), "設定保存エラー", MessageBoxButtons.RetryCancel))
+                        break;
+                }
+            }
         }
 
         private void fileSystemWatcher1_Changed(object sender, System.IO.FileSystemEventArgs e)
