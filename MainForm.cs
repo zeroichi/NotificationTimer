@@ -417,6 +417,7 @@ namespace notification_timer
             {
                 // 時間が 0 の場合は都度時間指定する
                 TimeInputForm time_form = new TimeInputForm();
+                time_form.TopMost = this.TopMost;
                 time_form.Time = 0;
                 if (time_form.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
@@ -435,6 +436,7 @@ namespace notification_timer
         private void btnTimeSet_Click(object sender, EventArgs e)
         {
             TimeInputForm time_form = new TimeInputForm();
+            time_form.TopMost = this.TopMost;
             int initial_value;
             int.TryParse(txtTimeOut.Text, out initial_value);
             if (initial_value < 0) initial_value = 0;
