@@ -489,6 +489,11 @@ namespace notification_timer
         {
             System.Diagnostics.Debug.WriteLine("Filesystem changed: " + e.FullPath);
         }
+
+        private void chkTopMost_CheckedChanged(object sender, EventArgs e)
+        {
+            this.TopMost = chkTopMost.Checked;
+        }
     }
 
     public class TimerJob

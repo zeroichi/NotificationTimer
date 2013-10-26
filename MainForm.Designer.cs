@@ -60,6 +60,7 @@
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
+            this.chkTopMost = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -353,11 +354,24 @@
             this.fileSystemWatcher1.SynchronizingObject = this;
             this.fileSystemWatcher1.Changed += new System.IO.FileSystemEventHandler(this.fileSystemWatcher1_Changed);
             // 
+            // chkTopMost
+            // 
+            this.chkTopMost.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkTopMost.AutoSize = true;
+            this.chkTopMost.Location = new System.Drawing.Point(327, 426);
+            this.chkTopMost.Name = "chkTopMost";
+            this.chkTopMost.Size = new System.Drawing.Size(117, 16);
+            this.chkTopMost.TabIndex = 27;
+            this.chkTopMost.Text = "常に手前に表示(&T)";
+            this.chkTopMost.UseVisualStyleBackColor = true;
+            this.chkTopMost.CheckedChanged += new System.EventHandler(this.chkTopMost_CheckedChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(670, 462);
+            this.Controls.Add(this.chkTopMost);
             this.Controls.Add(this.btnSetting);
             this.Controls.Add(this.lvJobList);
             this.Controls.Add(this.btnTimeSet);
@@ -424,6 +438,7 @@
         private System.Windows.Forms.ColumnHeader columnHeader5;
         private System.Windows.Forms.Button btnSetting;
         private System.IO.FileSystemWatcher fileSystemWatcher1;
+        private System.Windows.Forms.CheckBox chkTopMost;
     }
 }
 
